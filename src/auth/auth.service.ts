@@ -2,13 +2,14 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import BaseException from 'src/utils/BaseException';
+import { Role } from 'src/role/role.entity';
+import BaseException from 'src/utils/base-exception';
+import BaseResponse from 'src/utils/base-response';
 import { Repository } from 'typeorm';
 import { LoginDto } from './dto/login.dto';
-import { User } from './user.entity';
-import { UserWithTokenDto } from './dto/user-with-token';
-import BaseResponse from 'src/utils/BaseResponse';
 import { SignupDto } from './dto/signup.dto';
+import { UserWithTokenDto } from './dto/user-with-token';
+import { User } from './user.entity';
 
 @Injectable()
 export class AuthService {
@@ -18,34 +19,44 @@ export class AuthService {
   ) {}
 
   async login(params: LoginDto) {
-    const userFind = await this.userRepository.findOne({
-      where: { username: params.username },
-      // relations: ['roles', 'roles.permissions'],
-    });
+    try {
+      const userFind = await this.userRepository.findOne({
+        where: { username: params.username },
+        relations: ['roles', 'roles.permissions'],
+      });
 
-    if (!userFind) {
-      throw new BaseException('Sai username', HttpStatus.UNAUTHORIZED);
+      if (!userFind) {
+        throw new BaseException('Sai username', HttpStatus.UNAUTHORIZED);
+      }
+
+      if (userFind.deletedAt) {
+        throw new BaseException(
+          'Tài khoản đã bị khóa',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+
+      const checkPassword = bcrypt.compareSync(
+        params.password,
+        userFind.password,
+      );
+
+      if (!checkPassword) {
+        throw new BaseException('Sai mật khẩu', HttpStatus.UNAUTHORIZED);
+      }
+
+      const token = await this.generateToken(userFind);
+
+      return new BaseResponse<UserWithTokenDto>({
+        data: token,
+        message: 'Đăng nhập thành công',
+      });
+    } catch (error) {
+      throw new BaseException(
+        'Có lỗi xảy ra.\n' + error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-
-    if (userFind.deletedAt) {
-      throw new BaseException('Tài khoản đã bị khóa', HttpStatus.UNAUTHORIZED);
-    }
-
-    const checkPassword = bcrypt.compareSync(
-      params.password,
-      userFind.password,
-    );
-
-    if (!checkPassword) {
-      throw new BaseException('Sai mật khẩu', HttpStatus.UNAUTHORIZED);
-    }
-
-    const token = await this.generateToken(userFind);
-
-    return new BaseResponse<UserWithTokenDto>({
-      data: token,
-      message: 'Đăng nhập thành công',
-    });
   }
 
   async signUp(params: SignupDto, isAdmin = false) {
@@ -75,7 +86,10 @@ export class AuthService {
         message: 'Tạo tài khoản thành công!',
       });
     } catch (e) {
-      throw new BaseException('Có lỗi xảy ra.\n' + e.message, 500);
+      throw new BaseException(
+        'Có lỗi xảy ra.\n' + e.message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 

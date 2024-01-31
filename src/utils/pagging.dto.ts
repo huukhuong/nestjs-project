@@ -11,11 +11,11 @@ export class Pagging {
   })
   pageIndex: number;
 
-  @ApiProperty({
-    default: 'DESC',
-  })
-  orderBy?: 'DESC' | 'ASC';
+  // @ApiProperty({
+  //   default: 'DESC',
+  // })
+  // orderBy?: 'DESC' | 'ASC';
 
-  @ApiProperty()
-  orderColumn?: string;
+  // @ApiProperty()
+  // orderColumn?: string;
 }

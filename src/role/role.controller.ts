@@ -1,10 +1,11 @@
 import { Body, Controller, Delete, Get, Post, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UUIDParam } from 'src/utils/decorators';
+import { UUIDParam } from 'src/utils/custom-decorators';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { RoleService } from './role.service';
 import { SearchRoleDto } from './dto/search-role.dto';
 import { SyncRoleToUserDto } from './dto/sync-role-to-user.dto';
+import { SyncPermissionToRoleDto } from './dto/sync-permission-to-role.dto';
 
 @ApiTags('Role')
 @ApiBearerAuth()
@@ -52,6 +53,11 @@ export class RoleController {
     return this.roleService.detail(roleId);
   }
 
+  /**
+   * =================================================
+   * =============== Phân quyền user =================
+   * =================================================
+   */
   @Post('/sync-roles-to-user/:userId')
   @ApiOperation({
     summary: 'Đồng bộ nhóm người dùng cho user',
@@ -67,21 +73,59 @@ export class RoleController {
   @ApiOperation({
     summary: 'Gán nhóm người dùng cho user',
   })
-  assignRolesToUser(
+  assignRoleToUser(
     @UUIDParam('userId') userId: string,
     @UUIDParam('roleId') roleId: string,
   ) {
-    return this.roleService.assignRolesToUser(userId, roleId);
+    return this.roleService.assignRoleToUser(userId, roleId);
   }
 
   @Post('/revoke-roles-from-user/:userId/:roleId')
   @ApiOperation({
     summary: 'Xoá nhóm người dùng khỏi user',
   })
-  revokeRolesFromUser(
+  revokeRoleFromUser(
     @UUIDParam('userId') userId: string,
     @UUIDParam('roleId') roleId: string,
   ) {
-    return this.roleService.revokeRolesFromUser(userId, roleId);
+    return this.roleService.revokeRoleFromUser(userId, roleId);
+  }
+
+  /**
+   * =================================================
+   * =============== Phân quyền role =================
+   * =================================================
+   */
+  @Post('/sync-roles-to-user/:userId')
+  @ApiOperation({
+    summary: 'Đồng bộ nhóm người dùng và quyền',
+  })
+  syncPermissionsToRole(
+    @UUIDParam('roleId') roleId: string,
+    @Body() params: SyncPermissionToRoleDto,
+  ) {
+    return this.roleService.syncPermissionsToRole(roleId, params);
+  }
+
+  @Post('/assign-roles-to-user/:roleId/:permissionId')
+  @ApiOperation({
+    summary: 'Gán quyền cho nhóm người dùng',
+  })
+  assignPermissionToRole(
+    @UUIDParam('roleId') roleId: string,
+    @UUIDParam('permissionId') permissionId: string,
+  ) {
+    return this.roleService.assignPermissionToRole(roleId, permissionId);
+  }
+
+  @Post('/revoke-roles-from-user/:roleId/:permissionId')
+  @ApiOperation({
+    summary: 'Xoá quyền khỏi nhóm người dùng',
+  })
+  revokePermissionFromRole(
+    @UUIDParam('roleId') roleId: string,
+    @UUIDParam('permissionId') permissionId: string,
+  ) {
+    return this.roleService.revokePermissionFromRole(roleId, permissionId);
   }
 }

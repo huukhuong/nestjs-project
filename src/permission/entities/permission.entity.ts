@@ -1,18 +1,18 @@
-import { User } from 'src/auth/user.entity';
-import { Permission } from 'src/permission/entities/permission.entity';
+import { Role } from 'src/role/role.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinTable,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from 'typeorm';
+import { PermissionGroup } from './permission-group.entity';
 
-@Entity('roles')
-export class Role {
+@Entity('permissions')
+export class Permission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -40,20 +40,9 @@ export class Role {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @ManyToMany(() => User)
-  users: User[];
+  @ManyToMany(() => Role)
+  roles: Role[];
 
-  @ManyToMany(() => Permission)
-  @JoinTable({
-    name: 'roles_permissions',
-    joinColumn: {
-      name: 'roleId',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'permissionId',
-      referencedColumnName: 'id',
-    },
-  })
-  permissions: Permission[];
+  @ManyToOne(() => PermissionGroup, (group) => group.permissions)
+  group: PermissionGroup;
 }

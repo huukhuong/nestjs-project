@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import Constants from 'src/utils/constants';
 import { Pagging } from 'src/utils/pagging.dto';
 
-export class SearchRoleDto extends Pagging {
+export class SearchPermissionDto extends Pagging {
   @ApiProperty({
     default: false,
   })
@@ -12,4 +13,9 @@ export class SearchRoleDto extends Pagging {
 
   @ApiProperty()
   name?: string;
+
+  @ApiProperty({
+    default: Constants.UUID_EXAMPLE,
+  })
+  groupId?: string;
 }
