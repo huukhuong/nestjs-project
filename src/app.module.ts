@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './auth/user.entity';
 import { dataSourceOption } from '../database/data-source';
-import { RoleService } from './role/role.service';
-import { RoleController } from './role/role.controller';
-import { RoleModule } from './role/role.module';
+import { AuthGuard } from './auth/auth.guard';
+import { AuthModule } from './auth/auth.module';
+import { User } from './auth/user.entity';
 import { Role } from './role/role.entity';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -19,7 +17,12 @@ import { Role } from './role/role.entity';
     AuthModule,
     RoleModule,
   ],
-  controllers: [AppController, RoleController],
-  providers: [AppService, RoleService],
+  controllers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}
