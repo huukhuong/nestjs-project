@@ -1,13 +1,13 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Role } from 'src/role/entities/role.entity';
+import { Role } from 'src/role/role.entity';
 import BaseException from 'src/utils/BaseException';
 import BaseResponse from 'src/utils/BaseResponse';
 import { ILike, In, Repository } from 'typeorm';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { SearchRoleDto } from './dto/search-role.dto';
 import { SyncRoleToUserDto } from './dto/sync-role-to-user.dto';
-import { User } from 'src/auth/entities/user.entity';
+import { User } from 'src/auth/user.entity';
 
 @Injectable()
 export class RoleService {

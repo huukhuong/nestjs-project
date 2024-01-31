@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt';
 import BaseException from 'src/utils/BaseException';
 import { Repository } from 'typeorm';
 import { LoginDto } from './dto/login.dto';
-import { User } from './entities/user.entity';
+import { User } from './user.entity';
 import { UserWithTokenDto } from './dto/user-with-token';
 import BaseResponse from 'src/utils/BaseResponse';
 import { SignupDto } from './dto/signup.dto';
