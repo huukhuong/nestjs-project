@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { join } from 'path';
 import { dataSourceOption } from '../database/data-source';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthModule } from './auth/auth.module';
@@ -20,6 +22,9 @@ import { RoleModule } from './role/role.module';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot(dataSourceOption),
     TypeOrmModule.forFeature([User, Role, Permission, PermissionGroup]),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'src'),
+    }),
     AuthModule,
     RoleModule,
     PermissionModule,
