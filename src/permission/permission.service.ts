@@ -62,8 +62,21 @@ export class PermissionService {
 
   async create(params: CreatePermissionDto) {
     try {
-      const role = this.permissionRepository.create(params);
-      const result = await this.permissionRepository.save(role);
+      const permissionGroup = await this.permissionGroupRepository.findOneBy({
+        id: params.groupId,
+      });
+      if (!permissionGroup) {
+        throw new BaseException(
+          'Không tìm thấy nhóm chức năng',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      const permission = this.permissionRepository.create({
+        code: params.code,
+        name: params.name,
+      });
+      permission.group = permissionGroup;
+      const result = await this.permissionRepository.save(permission);
       return new BaseResponse({
         statusCode: 200,
         isSuccess: true,
@@ -96,7 +109,7 @@ export class PermissionService {
         });
         if (!groupFound) {
           throw new BaseException(
-            'nhóm chức năng không tồn tại',
+            'Nhóm chức năng không tồn tại',
             HttpStatus.NOT_FOUND,
           );
         }
