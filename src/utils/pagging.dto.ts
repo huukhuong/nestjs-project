@@ -2,6 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class Pagging {
   @ApiProperty({
+    default: false,
+  })
+  withDeleted?: boolean;
+  
+  @ApiProperty({
     default: 10,
   })
   pageSize: number;

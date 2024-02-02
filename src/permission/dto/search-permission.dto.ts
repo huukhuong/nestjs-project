@@ -3,11 +3,6 @@ import Constants from 'src/utils/constants';
 import { Pagging } from 'src/utils/pagging.dto';
 
 export class SearchPermissionDto extends Pagging {
-  @ApiProperty({
-    default: false,
-  })
-  withDeleted?: boolean;
-
   @ApiProperty()
   code?: string;
 

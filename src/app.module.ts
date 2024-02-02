@@ -16,6 +16,8 @@ import { RegionModule } from './region/region.module';
 import { Role } from './role/role.entity';
 import { RoleGuard } from './role/role.guard';
 import { RoleModule } from './role/role.module';
+import { CatalogModule } from './catalog/catalog.module';
+import { CatalogTypeModule } from './catalog-type/catalog-type.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { RoleModule } from './role/role.module';
     RoleModule,
     PermissionModule,
     RegionModule,
+    CatalogModule,
+    CatalogTypeModule,
   ],
   controllers: [],
   providers: [
