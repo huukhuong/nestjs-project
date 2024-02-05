@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { SearchKeywordDto } from 'src/utils/search-keyword.dto';
 import { CatalogService } from './catalog.service';
 import { CreateCatalogDto } from './dto/create-catalog.dto';
-import { SearchKeywordDto } from 'src/utils/search-keyword.dto';
 
 @ApiTags('Catalog')
 @ApiBearerAuth()

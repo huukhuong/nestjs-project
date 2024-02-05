@@ -39,7 +39,7 @@ export class RoleGuard implements CanActivate {
     }
 
     throw new BaseException(
-      'Không có quyền thực hiện thao tác này',
+      'Bạn không có quyền thực hiện thao tác này',
       HttpStatus.FORBIDDEN,
     );
   }
