@@ -6,6 +6,7 @@ import { CreateCatalogTypeDto } from './dto/create-catalog-type.dto';
 import BaseException from 'src/utils/base-exception';
 import BaseResponse from 'src/utils/base-response';
 import { SearchKeywordDto } from 'src/utils/search-keyword.dto';
+import paginate from 'src/utils/paginate';
 
 @Injectable()
 export class CatalogTypeService {
@@ -20,27 +21,15 @@ export class CatalogTypeService {
         params.keyword = '';
       }
 
-      const [role, total] = await this.catalogTypeRepository.findAndCount({
-        skip: (params.pageIndex - 1) * (params.pageSize + 1),
-        take: params.pageSize,
+      return await paginate({
+        pageSize: params.pageSize,
+        pageIndex: params.pageIndex,
+        repository: this.catalogTypeRepository,
+        withDeleted: params.withDeleted,
         where: [
           { code: ILike(`%${params.keyword}%`) },
           { name: ILike(`%${params.keyword}%`) },
         ],
-        withDeleted: params.withDeleted,
-      });
-
-      return new BaseResponse({
-        statusCode: 200,
-        isSuccess: true,
-        data: role,
-        message: 'Lấy danh sách thành công',
-        pagination: {
-          currentPage: params.pageIndex,
-          recordsPerPage: params.pageSize,
-          totalPages: Math.ceil(total / params.pageSize),
-          totalCount: total,
-        },
       });
     } catch (e) {
       throw new BaseException(

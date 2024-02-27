@@ -9,6 +9,7 @@ import { SearchPermissionGroupDto } from './dto/search-permission-group.dto';
 import { SearchPermissionDto } from './dto/search-permission.dto';
 import { PermissionGroup } from './entities/permission-group.entity';
 import { Permission } from './entities/permission.entity';
+import paginate from 'src/utils/paginate';
 
 @Injectable()
 export class PermissionService {
@@ -29,28 +30,16 @@ export class PermissionService {
         params.name = '';
       }
 
-      const [role, total] = await this.permissionRepository.findAndCount({
-        skip: (params.pageIndex - 1) * (params.pageSize + 1),
-        take: params.pageSize,
+      return await paginate({
+        pageSize: params.pageSize,
+        pageIndex: params.pageIndex,
+        repository: this.permissionRepository,
+        withDeleted: params.withDeleted,
         where: [
           { code: ILike(`%${params.code}%`) },
           { name: ILike(`%${params.name}%`) },
           params.groupId ? { group: { id: params.groupId } } : {},
         ],
-        withDeleted: params.withDeleted,
-      });
-
-      return new BaseResponse({
-        statusCode: 200,
-        isSuccess: true,
-        data: role,
-        message: 'Lấy danh sách quyền thành công',
-        pagination: {
-          currentPage: params.pageIndex,
-          recordsPerPage: params.pageSize,
-          totalPages: Math.ceil(total / params.pageSize),
-          totalCount: total,
-        },
       });
     } catch (e) {
       throw new BaseException(
@@ -171,24 +160,12 @@ export class PermissionService {
         params.name = '';
       }
 
-      const [role, total] = await this.permissionGroupRepository.findAndCount({
-        skip: (params.pageIndex - 1) * (params.pageSize + 1),
-        take: params.pageSize,
-        where: [{ name: ILike(`%${params.name}%`) }],
+      return await paginate({
+        pageSize: params.pageSize,
+        pageIndex: params.pageIndex,
+        repository: this.permissionGroupRepository,
         withDeleted: params.withDeleted,
-      });
-
-      return new BaseResponse({
-        statusCode: 200,
-        isSuccess: true,
-        data: role,
-        message: 'Lấy danh sách nhóm chức năng thành công',
-        pagination: {
-          currentPage: params.pageIndex,
-          recordsPerPage: params.pageSize,
-          totalPages: Math.ceil(total / params.pageSize),
-          totalCount: total,
-        },
+        where: [{ name: ILike(`%${params.name}%`) }],
       });
     } catch (e) {
       throw new BaseException(

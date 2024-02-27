@@ -10,6 +10,7 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { SearchRoleDto } from './dto/search-role.dto';
 import { SyncPermissionToRoleDto } from './dto/sync-permission-to-role.dto';
 import { SyncRoleToUserDto } from './dto/sync-role-to-user.dto';
+import paginate from 'src/utils/paginate';
 
 @Injectable()
 export class RoleService {
@@ -30,27 +31,15 @@ export class RoleService {
         params.name = '';
       }
 
-      const [role, total] = await this.roleRepository.findAndCount({
-        skip: (params.pageIndex - 1) * (params.pageSize + 1),
-        take: params.pageSize,
+      return await paginate({
+        pageSize: params.pageSize,
+        pageIndex: params.pageIndex,
+        repository: this.roleRepository,
+        withDeleted: params.withDeleted,
         where: [
           { code: ILike(`%${params.code}%`) },
           { name: ILike(`%${params.name}%`) },
         ],
-        withDeleted: params.withDeleted,
-      });
-
-      return new BaseResponse({
-        statusCode: 200,
-        isSuccess: true,
-        data: role,
-        message: 'Lấy danh sách nhóm người dùng thành công',
-        pagination: {
-          currentPage: params.pageIndex,
-          recordsPerPage: params.pageSize,
-          totalPages: Math.ceil(total / params.pageSize),
-          totalCount: total,
-        },
       });
     } catch (e) {
       throw new BaseException(
